@@ -1,0 +1,1265 @@
+{
+	"info": {
+		"_postman_id": "f5678cde-b9e8-4a45-87af-7e5fba1ae61d",
+		"name": "Shobuj-Das_Testing_World_API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34618466"
+	},
+	"item": [
+		{
+			"name": "Student Details",
+			"item": [
+				{
+					"name": "Get Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"var status_code = pm.response.code;\r",
+									"console.log(status_code)\r",
+									"\r",
+									"switch(status_code){\r",
+									"    case 200:\r",
+									"        pm.test(\"Status Code 200\");\r",
+									"\r",
+									"        pm.test(\"Verify Status Message\",function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"OK\");\r",
+									"        });\r",
+									"\r",
+									"        pm.test(\"Verify Response length\", function(){\r",
+									"        pm.expect(jsonData.length).to.equal(100)\r",
+									"        });\r",
+									"\r",
+									"        \r",
+									"        console.log(pm.request.url.toString());\r",
+									"\r",
+									"        break;\r",
+									"    \r",
+									"    case 404:\r",
+									"        pm.test(\"Verify Error code: 404\")\r",
+									"        pm.test(\"Verify error message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Not Found\");\r",
+									"        });\r",
+									"        break;\r",
+									"\r",
+									"    case 500:\r",
+									"        pm.test(\"Verify Error code: 500\");\r",
+									"        pm.test(\"Verify error message\",function(){\r",
+									"            pm.expect(pm.response).to.eql(\"Internal Server Error\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    default:\r",
+									"        break;\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/studentsDetails",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"studentsDetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var status_code = pm.response.code;\r",
+									"\r",
+									"switch(status_code){\r",
+									"    case 201:\r",
+									"        pm.test(\"Verify Status code 201\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Created\");\r",
+									"        })\r",
+									"        var jsonData = pm.response.json();\r",
+									"        pm.environment.set(\"id\", jsonData.id);\r",
+									"\r",
+									"        const expSchema = \r",
+									"        {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"            \"id\": {\r",
+									"            \"type\": \"integer\"\r",
+									"            },\r",
+									"            \"first_name\": {\r",
+									"            \"type\": \"string\"\r",
+									"            },\r",
+									"            \"middle_name\": {\r",
+									"            \"type\": \"string\"\r",
+									"            },\r",
+									"            \"last_name\": {\r",
+									"            \"type\": \"string\"\r",
+									"            },\r",
+									"            \"date_of_birth\": {\r",
+									"            \"type\": \"string\"\r",
+									"            }\r",
+									"        },\r",
+									"        \"required\": [\r",
+									"            \"id\",\r",
+									"            \"first_name\",\r",
+									"            \"middle_name\",\r",
+									"            \"last_name\",\r",
+									"            \"date_of_birth\"\r",
+									"        ]\r",
+									"        };\r",
+									"        pm.test(\"Verify Response Json Schema\", function(){\r",
+									"            pm.response.to.have.jsonSchema(expSchema);\r",
+									"        })\r",
+									"        \r",
+									"\r",
+									"        break;\r",
+									"\r",
+									"\r",
+									"    case 500:\r",
+									"        pm.test(\"Verify Internal server error status code: 500\");\r",
+									"        pm.test(\"Verify Error message is correct\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Internal Server Error\");\r",
+									"        });\r",
+									"\r",
+									"        const exp_schema_500 = {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"                \"Message\": {\r",
+									"                \"type\": \"string\"\r",
+									"                }\r",
+									"            },\r",
+									"            \"required\": [\r",
+									"                \"Message\"\r",
+									"            ]\r",
+									"            }\r",
+									"        pm.test(\"Error Message schema validation\", function(){\r",
+									"            pm.response.to.have.jsonSchema(exp_schema_500)\r",
+									"        });\r",
+									"\r",
+									"        break;\r",
+									"    default:\r",
+									"        break;\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var first_name = pm.variables.replaceIn(\"{{$randomFirstName}}\");\r",
+									"pm.environment.set(\"first_name\", first_name);\r",
+									"\r",
+									"var middle_name = pm.variables.replaceIn(\"{{$randomLastName}}\");\r",
+									"pm.environment.set(\"middle_name\", middle_name);\r",
+									"\r",
+									"var last_name = pm.variables.replaceIn(\"{{$randomLastName}}\");\r",
+									"pm.environment.set(\"last_name\", last_name);\r",
+									"\r",
+									"//------------------------------------------------------------------\r",
+									"//-----  generate a random year between 1950-1999 \r",
+									"var random_int = Math.floor(Math.random() * 50) + 50;\r",
+									"var year = \"19\" + random_int.toString();\r",
+									"// ------ Generate a random day between 1 to 30\r",
+									"var random_int = Math.floor(Math.random() * 30 ) + 1;\r",
+									"var day = random_int.toString();\r",
+									"// --- Generate a rondom month between 1 to 12\r",
+									"var random_int = Math.floor(Math.random() * 12) + 1;\r",
+									"var month = random_int.toString();\r",
+									"// add in a sigle string\r",
+									"var data_of_birth = year + \"-\" + month + \"-\" + day;\r",
+									"\r",
+									"pm.environment.set(\"date_of_birth\", data_of_birth);\r",
+									"console.log(data_of_birth);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n\"first_name\": \"{{first_name}}\", \r\n\"middle_name\": \"{{middle_name}}\", \r\n\"last_name\": \"{{last_name}}\", \r\n\"date_of_birth\": \"{{date_of_birth}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/studentsDetails",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"studentsDetails"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"var status_code = pm.response.code;\r",
+									"//console.log(status_code)\r",
+									"\r",
+									"switch(status_code){\r",
+									"    case 200:\r",
+									"        pm.test(\"Status Code 200\",)\r",
+									"    \r",
+									"        pm.test(\"Verify First Name\", function () {\r",
+									"            pm.expect(jsonData.data.first_name).to.eql(pm.environment.get(\"first_name\"));\r",
+									"        });\r",
+									"\r",
+									"        pm.test(\"Varify Middle name\", function(){\r",
+									"            pm.expect(jsonData.data.middle_name).to.eql(pm.environment.get(\"middle_name\"))\r",
+									"        });\r",
+									"\r",
+									"        pm.test(\"Varify Last name\", function(){\r",
+									"            pm.expect(jsonData.data.last_name).to.eql(pm.environment.get(\"last_name\"))\r",
+									"        });\r",
+									"\r",
+									"        pm.test(\"Verify Date of Birth\", function(){\r",
+									"            pm.expect(jsonData.data.date_of_birth).to.eql(pm.environment.get(\"date_of_birth\"));\r",
+									"        });\r",
+									"\r",
+									"        //----------------- Json schema verify\r",
+									"        var expectedJsonSchema = \r",
+									"        {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"            \"status\": {\r",
+									"            \"type\": \"string\"\r",
+									"            },\r",
+									"            \"data\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"                \"id\": {\r",
+									"                \"type\": \"integer\"\r",
+									"                },\r",
+									"                \"first_name\": {\r",
+									"                \"type\": \"string\"\r",
+									"                },\r",
+									"                \"middle_name\": {\r",
+									"                \"type\": \"string\"\r",
+									"                },\r",
+									"                \"last_name\": {\r",
+									"                \"type\": \"string\"\r",
+									"                },\r",
+									"                \"date_of_birth\": {\r",
+									"                \"type\": \"string\"\r",
+									"                }\r",
+									"            },\r",
+									"            \"required\": [\r",
+									"                \"id\",\r",
+									"                \"first_name\",\r",
+									"                \"middle_name\",\r",
+									"                \"last_name\",\r",
+									"                \"date_of_birth\"\r",
+									"            ]\r",
+									"            }\r",
+									"        },\r",
+									"        \"required\": [\r",
+									"            \"status\",\r",
+									"            \"data\"\r",
+									"        ]\r",
+									"        };\r",
+									"\r",
+									"        pm.test(\"Verify Json Schema\", function(){\r",
+									"            pm.response.to.have.jsonSchema(expectedJsonSchema);\r",
+									"        });\r",
+									"        \r",
+									"        break;\r",
+									"    \r",
+									"    case 400:\r",
+									"        pm.test(\"Verify Status code: 400\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Bad Request\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 404:\r",
+									"        pm.test(\"Verify Status code: 404\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Not Found\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 500:\r",
+									"        pm.test(\"Verify Status code; 500\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Internal Server Error\");\r",
+									"        })\r",
+									"        break;\r",
+									"    default:\r",
+									"        pm.test(\"Something went wrong...!! \");\r",
+									"        break;\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/studentsDetails/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"studentsDetails",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Technical skills",
+			"item": [
+				{
+					"name": "Create Technical Skill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const status_code = pm.response.code;\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"switch(status_code){\r",
+									"    case 200:\r",
+									"        pm.test(\"Verify Status Code: 200\");\r",
+									"                // response body status\r",
+									"        pm.test(\"Verify Response Body Status\", function(){\r",
+									"            pm.expect(jsonData.status).to.eql(\"true\");\r",
+									"        });\r",
+									"                // response body message\r",
+									"        pm.test(\"Verify Response Body Message\", function(){\r",
+									"            pm.expect(jsonData.msg).to.eql(\"Add  data success\");\r",
+									"        });\r",
+									"            // response schema verify\r",
+									"        const expected_schema =\r",
+									"            {\r",
+									"                \"type\": \"object\",\r",
+									"                \"properties\": {\r",
+									"                    \"status\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                    },\r",
+									"                    \"msg\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                    }\r",
+									"                },\r",
+									"                \"required\": [\r",
+									"                    \"status\",\r",
+									"                    \"msg\"\r",
+									"                ]\r",
+									"            };\r",
+									"        pm.test(\"Response Schema Verify\", function(){\r",
+									"            pm.response.to.have.jsonSchema(expected_schema);\r",
+									"        });\r",
+									"        break;\r",
+									"\r",
+									"   case 400:\r",
+									"        pm.test(\"Verify Status code: 400\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Bad Request\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 404:\r",
+									"        pm.test(\"Verify Status code: 404\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Not Found\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 500:\r",
+									"        pm.test(\"Verify Status code: 500\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Internal Server Error\");\r",
+									"        })\r",
+									"        break;\r",
+									"    default:\r",
+									"        pm.test(\"Something went wrong...!! \");\r",
+									"        break;\r",
+									"};\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// select 3 languages randomly\r",
+									"function select_language(all_languages){\r",
+									"    var language =[];\r",
+									"    for(i = 0; i<3; i++){\r",
+									"        var random = Math.floor(Math.random()*8);\r",
+									"        language[i] = all_languages[random];\r",
+									"    }\r",
+									"    if(language[0] != language[1] && language[0] != language[2] && language[1] != language[2]){\r",
+									"        pm.environment.set(\"languages\", language);\r",
+									"        return;\r",
+									"    }\r",
+									"    select_language(all_languages);\r",
+									"}\r",
+									"var all_languages = [\"Java\", \"Python\", \"Java Script\", \"Rubi\", \"Rust\", \"C\", \"C++\", \"Bash\",\"PHP\"];\r",
+									"\r",
+									"select_language(all_languages);\r",
+									"\r",
+									"// year of experience (1-10)\r",
+									"var year_exp = Math.floor(Math.random()*10)+1;\r",
+									"pm.environment.set(\"year_exp\", year_exp.toString());\r",
+									"\r",
+									"// last used\r",
+									"var last_used = Math.floor(Math.random()*5)+1;\r",
+									"pm.environment.set(\"last used\", last_used.toString());\r",
+									"\r",
+									"\r",
+									"// ------- \r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n\"id\": 1, \r\n\"language\": [ \r\n\"{{languages}}\"\r\n], \r\n\"yearexp\": \"{{year_exp}}\", \r\n\"lastused\": \"{{last used}}\", \r\n\"st_id\": {{id}} \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/technicalskills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"technicalskills"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get technical skills by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/technicalskills/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"technicalskills",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Address",
+			"item": [
+				{
+					"name": "Create Student Address",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const status_code = pm.response.code;\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"switch (status_code) {\r",
+									"    case 200:\r",
+									"        //  Verify status code and messages \r",
+									"        pm.test(\"Verify Status Code: 200\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"OK\");\r",
+									"        });\r",
+									"        // response body status\r",
+									"        pm.test(\"Verify Response Body Status\", function () {\r",
+									"            pm.expect(jsonData.status).to.eql(\"true\");\r",
+									"        });\r",
+									"        // response body message\r",
+									"        pm.test(\"Verify Response Body Message\", function () {\r",
+									"            pm.expect(jsonData.msg).to.eql(\"Add  data success\");\r",
+									"        });\r",
+									"        // response schema verify\r",
+									"        const expected_schema =\r",
+									"        {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"                \"status\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                },\r",
+									"                \"msg\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                }\r",
+									"            },\r",
+									"            \"required\": [\r",
+									"                \"status\",\r",
+									"                \"msg\"\r",
+									"            ]\r",
+									"        };\r",
+									"        pm.test(\"Response Schema Verify\", function () {\r",
+									"            pm.response.to.have.jsonSchema(expected_schema);\r",
+									"        });\r",
+									"        break;\r",
+									"\r",
+									"    case 400:\r",
+									"        pm.test(\"Verify Status code: 400\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Bad Request\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 404:\r",
+									"        pm.test(\"Verify Status code: 404\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Not Found\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 500:\r",
+									"        pm.test(\"Verify Status code; 500\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Internal Server Error\");\r",
+									"        })\r",
+									"        break;\r",
+									"    default:\r",
+									"        pm.test(\"Something went wrong...!!\");\r",
+									"        break;\r",
+									"};\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// house number\r",
+									"var house_number = pm.variables.replaceIn(\"{{$randomInt}}\");\r",
+									"pm.environment.set(\"house_number\",house_number);\r",
+									"\r",
+									"// city\r",
+									"var city = pm.variables.replaceIn(\"{{$randomCity}}\");\r",
+									"pm.environment.set(\"city\",city.toString());\r",
+									"\r",
+									"//state \r",
+									"var states = [\"New York\", \"Claifornia\", \"Bronx\", \"Miami\",\"Texas\", \"Florida\", \"Ohio\", \"Hawaii\"];\r",
+									"var temp = Math.floor(Math.random() * 8);\r",
+									"var state = states[temp];\r",
+									"pm.environment.set(\"state\",state);\r",
+									"\r",
+									"// country\r",
+									"var country = pm.variables.replaceIn(\"{{$randomCountry}}\");\r",
+									"pm.environment.set(\"country\",country);\r",
+									"\r",
+									"// phone number\r",
+									"var mobile = pm.variables.replaceIn(\"{{$randomPhoneNumber}}\");\r",
+									"pm.environment.set(\"mobile\",mobile);\r",
+									"\r",
+									"var std_code = pm.variables.replaceIn(\"{{$randomInt}}\");\r",
+									"pm.environment.set(\"std_code\", std_code.toString());\r",
+									"\r",
+									"var home = pm.variables.replaceIn(\"{{$randomPhoneNumber}}\");\r",
+									"pm.environment.set(\"home\",home);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n\"Permanent_Address\": { \r\n\"House_Number\": \"{{house_number}}\",\r\n\"City\": \"{{city}}\",\r\n \"State\": \"{{state}}\", \r\n\"Country\": \"{{country}}\",\r\n\"PhoneNumber\": [ \r\n{ \r\n\"Std_Code\": \"{{std_code}}\",\r\n\"Home\": \"{{home}}\",\r\n\"Mobile\": \"{{mobile}}\" \r\n}\r\n] \r\n},\r\n\"stId\": {{id}} \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/addresses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"addresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get address by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData  = pm.response.json();\r",
+									"var status_code = pm.response.code;\r",
+									"\r",
+									"switch(status_code){\r",
+									"    case 200:\r",
+									"        pm.test(\"Verify Status code is 200\");\r",
+									"        pm.test(\"Verify Status message:OK\",function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"OK\");\r",
+									"        });\r",
+									"\r",
+									"        /*\r",
+									"         since there can be multiple address,\r",
+									"         we will check the last one because\r",
+									"         environment stores the last created values\r",
+									"        */\r",
+									"        var checkLastOne = jsonData.length - 1; \r",
+									"        pm.test(\"Verify House number\", function(){\r",
+									"            pm.expect(jsonData[checkLastOne].Permanent_Address.House_Number).to.eql(pm.environment.get(\"house_number\"));\r",
+									"            });\r",
+									"\r",
+									"        pm.test(\"Verify City\", function(){\r",
+									"            pm.expect(jsonData[checkLastOne].Permanent_Address.City).to.eql(pm.environment.get(\"city\"));\r",
+									"            });\r",
+									"\r",
+									"        pm.test(\"Verify State\", function(){\r",
+									"            pm.expect(jsonData[checkLastOne].Permanent_Address.State).to.eql(pm.environment.get(\"state\"));\r",
+									"            });\r",
+									"\r",
+									"        pm.test(\"Verify Country\", function(){\r",
+									"            pm.expect(jsonData[checkLastOne].Permanent_Address.Country).to.eql(pm.environment.get(\"country\"));\r",
+									"            });    \r",
+									"        pm.test(\"Verify Std code of phone number\", function(){\r",
+									"            pm.expect(jsonData[checkLastOne].Permanent_Address.PhoneNumber[0].Std_Code).to.eql(pm.environment.get(\"std_code\"));\r",
+									"            }); \r",
+									"\r",
+									"        pm.test(\"Verify Home number\", function(){\r",
+									"            pm.expect(jsonData[checkLastOne].Permanent_Address.PhoneNumber[0].Home).to.eql(pm.environment.get(\"home\"));\r",
+									"            });\r",
+									"        \r",
+									"        pm.test(\"Verify mobile number\", function(){\r",
+									"            pm.expect(jsonData[checkLastOne].Permanent_Address.PhoneNumber[0].Mobile).to.eql(pm.environment.get(\"mobile\"));\r",
+									"            });\r",
+									"        \r",
+									"        break;\r",
+									"    \r",
+									"    case 400:\r",
+									"        pm.test(\"Verify Status code: 400\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Bad Request\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 404:\r",
+									"        pm.test(\"Verify Status code: 404\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Not Found\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    case 500:\r",
+									"        pm.test(\"Verify Status code is 500\");\r",
+									"        pm.test(\"Verify Status Message\", function(){\r",
+									"            pm.expect(pm.response.status).to.eql(\"Internal Server Error\");\r",
+									"        })\r",
+									"        break;\r",
+									"\r",
+									"    default:\r",
+									"        pm.test(\"Unexpected Status Code: \" + status_code, function() {\r",
+									"            pm.expect(false).to.be.true;  // Force failure if status is not 200\r",
+									"        });\r",
+									"\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/addresses/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"addresses",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Final Student Details",
+			"item": [
+				{
+					"name": "Final Student Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var status_code = pm.response.code;\r",
+									"\r",
+									"switch(status_code){\r",
+									"    case 200:\r",
+									"        pm.test(\"Verify Status Code 200\");\r",
+									"\r",
+									"        pm.test(\"Verify Status Message\", function () {\r",
+									"            var status = pm.response.status;\r",
+									"            pm.expect(status).to.eql(\"OK\");\r",
+									"        });\r",
+									"\r",
+									"        var jsonData = pm.response.json();\r",
+									"        pm.test(\"Verify Languages\",function(){\r",
+									"            var env_languages = pm.environment.get(\"languages\");\r",
+									"            console.log(env_languages);\r",
+									"            var flag = 0;\r",
+									"            \r",
+									"            for(var i=0; i<jsonData.data.TechnicalDetails.length; i++){\r",
+									"                var check = 0;\r",
+									"                for(var j=0; j<env_languages.length; j++){\r",
+									"                    if(jsonData.data.TechnicalDetails[i].language[j] === env_languages[j]){\r",
+									"                        check++;\r",
+									"                    }\r",
+									"                }\r",
+									"                if(check === env_languages.length){\r",
+									"                    flag = 1;\r",
+									"                    break;\r",
+									"                }\r",
+									"            }\r",
+									"            pm.expect(flag).to.equal(1);\r",
+									"        });\r",
+									"\r",
+									"        pm.test(\"Verify Year Of Experience\", function(){\r",
+									"            var exp = pm.environment.get(\"year_exp\");\r",
+									"            var flag = 0;\r",
+									"            for(var i=0; i<jsonData.data.TechnicalDetails.length; i++){\r",
+									"                if(jsonData.data.TechnicalDetails[i].yearexp === exp){\r",
+									"                    flag=1;\r",
+									"                    break;\r",
+									"                }\r",
+									"            }\r",
+									"            pm.expect(flag).to.equal(1);\r",
+									"        })\r",
+									"\r",
+									"        pm.test(\"Verify House Number\", function(){\r",
+									"            var flag = 0;\r",
+									"            var house_num = pm.environment.get(\"house_number\");\r",
+									"            for(var i=0; i<jsonData.data.Address.length; i++){\r",
+									"                if(jsonData.data.Address[i].Permanent_Address.House_Number === house_num){\r",
+									"                    flag = 1;\r",
+									"                    break;\r",
+									"                }\r",
+									"            }\r",
+									"            pm.expect(flag).to.equal(1);\r",
+									"        })\r",
+									"\r",
+									"        pm.test(\"Verify City\", function(){\r",
+									"            var flag = 0;\r",
+									"            var city = pm.environment.get(\"city\");\r",
+									"            for(var i=0; i<jsonData.data.Address.length; i++){\r",
+									"                if(jsonData.data.Address[i].Permanent_Address.City === city){\r",
+									"                    flag = 1;\r",
+									"                    break;\r",
+									"                }\r",
+									"            }\r",
+									"            pm.expect(flag).to.equal(1);\r",
+									"        })\r",
+									"\r",
+									"        pm.test(\"Verify Country\", function(){\r",
+									"            var flag = 0;\r",
+									"            var country = pm.environment.get(\"country\");\r",
+									"            for(var i=0; i<jsonData.data.Address.length; i++){\r",
+									"                if(jsonData.data.Address[i].Permanent_Address.Country === country){\r",
+									"                    flag = 1;\r",
+									"                    break;\r",
+									"                }\r",
+									"            }\r",
+									"            pm.expect(flag).to.equal(1);\r",
+									"        })\r",
+									"\r",
+									"        pm.test(\"Verify Mobile\", function(){\r",
+									"            var flag = 0;\r",
+									"            for(var i=0; i<jsonData.data.Address.length; i++){\r",
+									"                if(jsonData.data.Address[i].Permanent_Address.PhoneNumber[0].Mobile === pm.environment.get(\"mobile\")){\r",
+									"                    flag = 1;\r",
+									"                    break;\r",
+									"                }\r",
+									"            }\r",
+									"            pm.expect(flag).to.equal(1);\r",
+									"        })\r",
+									"\r",
+									"        pm.test(\"Verify Current Address\", function(){\r",
+									"            var flag = 0;\r",
+									"            for(var i=0; i<jsonData.data.Address.length; i++){\r",
+									"                if(jsonData.data.Address[i].Current_Address === null ){\r",
+									"                    flag = 1;\r",
+									"                    break;\r",
+									"                }\r",
+									"            }\r",
+									"            pm.expect(flag).to.equal(1);\r",
+									"        })\r",
+									"\r",
+									"        // pm.test(\"Verify response time is less than 500ms\", function () {\r",
+									"        //     pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"        // });\r",
+									"\r",
+									"\r",
+									"        // ------------- Schema check\r",
+									"\r",
+									"        const expectedJsonSchema =\r",
+									"        {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\": {\r",
+									"            \"status\": {\r",
+									"            \"type\": \"string\"\r",
+									"            },\r",
+									"            \"data\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"                \"first_name\": {\r",
+									"                \"type\": \"string\"\r",
+									"                },\r",
+									"                \"middle_name\": {\r",
+									"                \"type\": \"string\"\r",
+									"                },\r",
+									"                \"last_name\": {\r",
+									"                \"type\": \"string\"\r",
+									"                },\r",
+									"                \"date_of_birth\": {\r",
+									"                \"type\": \"string\"\r",
+									"                },\r",
+									"                \"TechnicalDetails\": {\r",
+									"                \"type\": \"array\",\r",
+									"                \"items\": [\r",
+									"                    {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                        \"id\": {\r",
+									"                        \"type\": \"integer\"\r",
+									"                        },\r",
+									"                        \"language\": {\r",
+									"                        \"type\": \"array\",\r",
+									"                        \"items\": [\r",
+									"                            {\r",
+									"                            \"type\": \"string\"\r",
+									"                            },\r",
+									"                            {\r",
+									"                            \"type\": \"string\"\r",
+									"                            },\r",
+									"                            {\r",
+									"                            \"type\": \"string\"\r",
+									"                            }\r",
+									"                        ]\r",
+									"                        },\r",
+									"                        \"yearexp\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"lastused\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                        },\r",
+									"                        \"st_id\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                        }\r",
+									"                    },\r",
+									"                    \"required\": [\r",
+									"                        \"id\",\r",
+									"                        \"language\",\r",
+									"                        \"yearexp\",\r",
+									"                        \"lastused\",\r",
+									"                        \"st_id\"\r",
+									"                    ]\r",
+									"                    }\r",
+									"                ]\r",
+									"                },\r",
+									"                \"Address\": {\r",
+									"                \"type\": \"array\",\r",
+									"                \"items\": [\r",
+									"                    {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                        \"Permanent_Address\": {\r",
+									"                        \"type\": \"object\",\r",
+									"                        \"properties\": {\r",
+									"                            \"House_Number\": {\r",
+									"                            \"type\": \"string\"\r",
+									"                            },\r",
+									"                            \"City\": {\r",
+									"                            \"type\": \"string\"\r",
+									"                            },\r",
+									"                            \"State\": {\r",
+									"                            \"type\": \"string\"\r",
+									"                            },\r",
+									"                            \"Country\": {\r",
+									"                            \"type\": \"string\"\r",
+									"                            },\r",
+									"                            \"PhoneNumber\": {\r",
+									"                            \"type\": \"array\",\r",
+									"                            \"items\": [\r",
+									"                                {\r",
+									"                                \"type\": \"object\",\r",
+									"                                \"properties\": {\r",
+									"                                    \"Std_Code\": {\r",
+									"                                    \"type\": \"string\"\r",
+									"                                    },\r",
+									"                                    \"Home\": {\r",
+									"                                    \"type\": \"string\"\r",
+									"                                    },\r",
+									"                                    \"Mobile\": {\r",
+									"                                    \"type\": \"string\"\r",
+									"                                    }\r",
+									"                                },\r",
+									"                                \"required\": [\r",
+									"                                    \"Std_Code\",\r",
+									"                                    \"Home\",\r",
+									"                                    \"Mobile\"\r",
+									"                                ]\r",
+									"                                }\r",
+									"                            ]\r",
+									"                            }\r",
+									"                        },\r",
+									"                        \"required\": [\r",
+									"                            \"House_Number\",\r",
+									"                            \"City\",\r",
+									"                            \"State\",\r",
+									"                            \"Country\",\r",
+									"                            \"PhoneNumber\"\r",
+									"                        ]\r",
+									"                        },\r",
+									"                        \"Current_Address\": {\r",
+									"                        \"type\": \"null\"\r",
+									"                        },\r",
+									"                        \"stId\": {\r",
+									"                        \"type\": \"string\"\r",
+									"                        }\r",
+									"                    },\r",
+									"                    \"required\": [\r",
+									"                        \"Permanent_Address\",\r",
+									"                        \"Current_Address\",\r",
+									"                        \"stId\"\r",
+									"                    ]\r",
+									"                    }\r",
+									"                ]\r",
+									"                }\r",
+									"            },\r",
+									"            \"required\": [\r",
+									"                \"first_name\",\r",
+									"                \"middle_name\",\r",
+									"                \"last_name\",\r",
+									"                \"date_of_birth\",\r",
+									"                \"TechnicalDetails\",\r",
+									"                \"Address\"\r",
+									"            ]\r",
+									"            }\r",
+									"        },\r",
+									"        \"required\": [\r",
+									"            \"status\",\r",
+									"            \"data\"\r",
+									"        ]\r",
+									"        };\r",
+									"\r",
+									"        pm.test(\"Verify Json Schema\", function(){\r",
+									"            pm.response.to.have.jsonSchema(expectedJsonSchema);\r",
+									"        })\r",
+									"\r",
+									"        break;\r",
+									"\r",
+									"    case 400:\r",
+									"        pm.test(\"Verify Status code 400\");\r",
+									"\r",
+									"        pm.test(\"Verify Status Message\", function () {\r",
+									"            var status = pm.response.status;\r",
+									"            pm.expect(status).to.eql(\"Bad Request\");\r",
+									"        });\r",
+									"        break;\r",
+									"    \r",
+									"    case 404:\r",
+									"        pm.test(\"Verify Status code 404\");\r",
+									"\r",
+									"        pm.test(\"Verify Status Message\", function () {\r",
+									"            var status = pm.response.status;\r",
+									"            pm.expect(status).to.eql(\"Not Found\");\r",
+									"        });\r",
+									"        break;\r",
+									"\r",
+									"    case 500:\r",
+									"        pm.test(\"Verify staus code 500: Internal Server Error\");\r",
+									"\r",
+									"        pm.test(\"Verify Status Message\", function () {\r",
+									"            var status = pm.response.status;\r",
+									"            pm.expect(status).to.eql(\"Internal Server Error\");\r",
+									"        });\r",
+									"        break;\r",
+									"    \r",
+									"    default:\r",
+									"        pm.test(\"Something went worng...!!!\");\r",
+									"        break;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/FinalStudentDetails/{{id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"FinalStudentDetails",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"Verify status code is 200\",function(){\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"pm.test(\"Verify status message is OK\",function(){\r",
+							"    pm.expect(pm.response.status).eql(\"OK\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response status\",function(){\r",
+							"    pm.expect(jsonData.status).eql(\"true\")\r",
+							"});\r",
+							"pm.test(\"Verify response message\",function(){\r",
+							"    pm.expect(jsonData.msg.trim()).eql(\"Delete  data success\")\r",
+							"});\r",
+							"\r",
+							"const expSchema = {\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"status\": {\r",
+							"      \"type\": \"string\"\r",
+							"    },\r",
+							"    \"msg\": {\r",
+							"      \"type\": \"string\"\r",
+							"    }\r",
+							"  },\r",
+							"  \"required\": [\r",
+							"    \"status\",\r",
+							"    \"msg\"\r",
+							"  ]\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Verify response json schema\",function(){\r",
+							"    pm.response.to.have.jsonSchema(expSchema);\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/studentsDetails/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"studentsDetails",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET_after_Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Verify Status code: 404\", function(){\r",
+							"\tpm.response.to.have.status(404)\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify Status Message\", function(){\r",
+							"\tpm.expect(pm.response.status).to.eql('Not Found')\r",
+							"})\r",
+							"pm.test(\"Verify Response body status\", function(){\r",
+							"\tpm.expect(jsonData.status).to.eql(\"false\");\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Verify Response body message\", function(){\r",
+							"\tpm.expect(jsonData.msg).to.eql(\"No File Found\");\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/FinalStudentDetails/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"FinalStudentDetails",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
